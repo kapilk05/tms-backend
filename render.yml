@@ -1,0 +1,12 @@
+cat > render.yaml << 'EOF'
+services:
+  - type: web
+    name: tms-backend
+    runtime: ruby
+    runtimeVersion: 3.0.4
+    buildCommand: bundle install
+    startCommand: bundle exec puma -t 5:5 -p ${PORT:-3000} -e ${RACK_ENV:-production}
+    envVars:
+      - key: RAILS_ENV
+        value: production
+EOF
