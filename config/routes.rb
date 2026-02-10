@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     resources :tasks do
       collection do
         post 'assign', to: 'tasks#assign'
+        post 'unassign', to: 'tasks#unassign'
         post 'complete', to: 'tasks#complete'
       end
 
