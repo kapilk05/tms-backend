@@ -5,6 +5,9 @@ gem "rails", "~> 7.2"
 gem "pg", "~> 1.1"
 gem "puma", ">= 5.0"
 gem "bcrypt", "~> 3.1.7"
+
+gem 'jwt'
+gem 'kaminari'
 gem "rails_12factor", group: :production
 gem "tzinfo-data", platforms: %i[ mswin mswin64 mingw x64_mingw jruby ]
 
