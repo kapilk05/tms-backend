@@ -75,6 +75,7 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
     base64 (0.3.0)
+    bcrypt (3.1.21)
     benchmark (0.5.0)
     bigdecimal (4.0.1)
     bootsnap (1.22.0)
@@ -212,6 +213,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  bcrypt (~> 3.1.7)
   bootsnap
   debug
   pg (~> 1.1)

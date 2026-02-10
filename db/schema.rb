@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_02_10_165645) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_10_165645) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -32,6 +32,17 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_10_165645) do
     t.index ["name"], name: "index_roles_on_name", unique: true
   end
 
+  create_table "task_assignments", force: :cascade do |t|
+    t.bigint "task_id", null: false
+    t.bigint "member_id", null: false
+    t.datetime "assigned_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["member_id"], name: "index_task_assignments_on_member_id"
+    t.index ["task_id", "member_id"], name: "index_task_assignments_on_task_id_and_member_id", unique: true
+    t.index ["task_id"], name: "index_task_assignments_on_task_id"
+  end
+
   create_table "tasks", force: :cascade do |t|
     t.string "title", null: false
     t.text "description"
@@ -45,5 +56,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_10_165645) do
   end
 
   add_foreign_key "members", "roles"
+  add_foreign_key "task_assignments", "members"
+  add_foreign_key "task_assignments", "tasks"
   add_foreign_key "tasks", "members", column: "created_by_id"
 end
