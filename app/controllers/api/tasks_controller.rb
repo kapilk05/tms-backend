@@ -9,7 +9,14 @@ module Api
       page = params[:page] || 1
       per_page = [params[:per_page].to_i, 100].min || 10
       
+      # Get tasks where user is creator OR assigned to
       tasks = Task.includes(:created_by, :assigned_members)
+               .left_joins(:task_assignments)
+               .where("tasks.created_by_id = ? OR task_assignments.member_id = ?", 
+                      current_user.id, current_user.id)
+               .distinct
+      
+      # Apply filters
       tasks = tasks.where(status: params[:status]) if params[:status].present?
       tasks = tasks.where(priority: params[:priority]) if params[:priority].present?
       tasks = tasks.order(params[:sort] || :created_at)

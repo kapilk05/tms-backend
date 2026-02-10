@@ -1,13 +1,10 @@
-# app/services/authorize_api_request.rb
 class AuthorizeApiRequest
   def initialize(headers = {})
     @headers = headers
   end
 
   def call
-    {
-      result: member
-    }
+    member
   end
 
   private
