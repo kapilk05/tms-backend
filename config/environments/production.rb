@@ -1,16 +1,18 @@
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
-  # Settings specified here will take precedence over those in config/application.rb.
+  # Settings specified here will take precedence over the defaults in config/environments/production.rb.
+
+  config.cache_classes = true
+  config.eager_load = true
+  config.consider_all_requests_local = false
+  config.action_controller.perform_caching = true
+
+  # Add Render hostname
+  config.hosts << "tms-backend-uf8q.onrender.com"
 
   # Code is not reloaded between requests.
   config.enable_reloading = false
-
-  # Eager load code on boot. This eager loads most of Rails and
-  # your application in memory, allowing both threaded web servers
-  # and those relying on copy on write to perform better.
-  # Rake tasks automatically ignore this option for performance.
-  config.eager_load = true
 
   # Full error reports are disabled and caching is turned on.
   config.consider_all_requests_local = false
