@@ -42,7 +42,7 @@ module Api
       )
 
       if member.save
-        render json: member_json(member), status: :created
+        render json: member_json(member), status: :ok
       else
         render json: { errors: member.errors.full_messages }, status: :unprocessable_entity
       end
