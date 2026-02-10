@@ -135,7 +135,7 @@ module Api
     private
 
     def set_task
-      task_id = params[:id] || params[:task_id]
+      task_id = params[:id]  # only take task ID from URL
       if task_id.nil?
         render json: { error: 'Task id is required' }, status: :bad_request
         return
