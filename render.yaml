@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: tms-backend
+    runtime: ruby
+    runtimeVersion: 3.1.0
+    buildCommand: bundle install
+    startCommand: bundle exec puma -t 5:5 -p ${PORT:-3000} -e ${RACK_ENV:-production}
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: DATABASE_URL
+        value: postgresql://postgres:Neeru3105%40kapil@db.jrdbgktepcnrzzszsucc.supabase.co:5432/postgres
