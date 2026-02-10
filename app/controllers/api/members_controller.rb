@@ -31,6 +31,10 @@ module Api
       render json: member_json(@member)
     end
 
+    def me
+      render json: member_json(current_user)
+    end
+
     def create
       role = Role.find_or_create_by(name: params[:role_name] || 'user')
       

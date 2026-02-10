@@ -3,6 +3,9 @@ class Member < ApplicationRecord
   has_many :task_assignments, dependent: :destroy
   has_many :tasks, through: :task_assignments
   has_many :created_tasks, class_name: 'Task', foreign_key: 'created_by_id', dependent: :destroy
+  has_many :requested_help_requests, class_name: 'HelpRequest', foreign_key: 'requester_id', dependent: :destroy
+  has_many :assigned_help_requests, class_name: 'HelpRequest', foreign_key: 'admin_id', dependent: :destroy
+  has_many :help_answers, foreign_key: 'admin_id', dependent: :destroy
   
   has_secure_password
   

@@ -1,8 +1,9 @@
 module Api
   class TasksController < ApplicationController
-    before_action :set_task, only: [:show, :update, :destroy, :assign, :unassign, :assignments]
+    before_action :set_task, only: [:show, :update, :destroy, :assign, :unassign, :assignments, :complete]
     before_action :authorize_owner_or_admin, only: [:update, :destroy]
     before_action :authorize_assignment, only: [:assign, :unassign]
+    before_action :authorize_assignee, only: [:complete]
 
     # GET /api/tasks
     def index
@@ -107,10 +108,39 @@ module Api
             id: m.id, 
             name: m.name, 
             email: m.email,
-            assigned_at: @task.task_assignments.find_by(member: m).assigned_at
+            assigned_at: @task.task_assignments.find_by(member: m).assigned_at,
+            completed_at: @task.task_assignments.find_by(member: m).completed_at,
+            completion_comment: @task.task_assignments.find_by(member: m).completion_comment
           } 
         }
       }
+    end
+
+    # POST /api/tasks/:id/complete
+    def complete
+      assignment = TaskAssignment.find_by(task: @task, member: current_user)
+
+      if assignment.nil?
+        render json: { error: 'Not assigned to this task' }, status: :forbidden
+        return
+      end
+
+      if assignment.update(completed_at: Time.current, completion_comment: params[:comment])
+        if @task.task_assignments.where(completed_at: nil).count.zero?
+          @task.update(status: 'completed')
+        end
+
+        render json: {
+          task: task_detail_json(@task),
+          assignment: {
+            member_id: current_user.id,
+            completed_at: assignment.completed_at,
+            completion_comment: assignment.completion_comment
+          }
+        }, status: :ok
+      else
+        render json: { errors: assignment.errors.full_messages }, status: :unprocessable_entity
+      end
     end
 
     private
@@ -162,6 +192,12 @@ module Api
 
     def authorize_assignment
       unless ['admin', 'manager'].include?(current_user.role.name) || @task.created_by_id == current_user.id
+        render json: { error: 'Forbidden' }, status: :forbidden
+      end
+    end
+
+    def authorize_assignee
+      unless @task.assigned_members.exists?(id: current_user.id)
         render json: { error: 'Forbidden' }, status: :forbidden
       end
     end

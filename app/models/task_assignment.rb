@@ -5,6 +5,10 @@ class TaskAssignment < ApplicationRecord
   validates :task_id, uniqueness: { scope: :member_id, message: "already assigned to this member" }
   
   before_create :set_assigned_at
+
+  def completed?
+    completed_at.present?
+  end
   
   private
   

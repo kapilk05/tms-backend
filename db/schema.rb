@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_10_165645) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_11_120200) do
   create_schema "auth"
   create_schema "extensions"
   create_schema "graphql"
@@ -27,6 +27,27 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_10_165645) do
   enable_extension "plpgsql"
   enable_extension "supabase_vault"
   enable_extension "uuid-ossp"
+
+  create_table "help_answers", force: :cascade do |t|
+    t.bigint "help_request_id", null: false
+    t.bigint "admin_id", null: false
+    t.text "answer", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_help_answers_on_admin_id"
+    t.index ["help_request_id"], name: "index_help_answers_on_help_request_id", unique: true
+  end
+
+  create_table "help_requests", force: :cascade do |t|
+    t.bigint "requester_id", null: false
+    t.bigint "admin_id", null: false
+    t.text "question", null: false
+    t.string "status", default: "open", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_help_requests_on_admin_id"
+    t.index ["requester_id"], name: "index_help_requests_on_requester_id"
+  end
 
   create_table "members", force: :cascade do |t|
     t.string "email", null: false
@@ -52,6 +73,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_10_165645) do
     t.datetime "assigned_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "completed_at"
+    t.text "completion_comment"
     t.index ["member_id"], name: "index_task_assignments_on_member_id"
     t.index ["task_id", "member_id"], name: "index_task_assignments_on_task_id_and_member_id", unique: true
     t.index ["task_id"], name: "index_task_assignments_on_task_id"
@@ -69,6 +92,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_10_165645) do
     t.index ["created_by_id"], name: "index_tasks_on_created_by_id"
   end
 
+  add_foreign_key "help_answers", "help_requests"
+  add_foreign_key "help_answers", "members", column: "admin_id"
+  add_foreign_key "help_requests", "members", column: "admin_id"
+  add_foreign_key "help_requests", "members", column: "requester_id"
   add_foreign_key "members", "roles"
   add_foreign_key "task_assignments", "members"
   add_foreign_key "task_assignments", "tasks"
