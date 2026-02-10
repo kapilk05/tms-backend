@@ -11,6 +11,18 @@ module Api
     end
 
     def create
+      task = Task.find_by(id: params[:task_id])
+
+      if task.nil?
+        render json: { error: 'Task not found' }, status: :not_found
+        return
+      end
+
+      if task.due_date.present? && task.due_date < Time.current.to_date
+        render json: { error: 'Cannot request help on overdue task' }, status: :unprocessable_entity
+        return
+      end
+
       admin = Member.joins(:role).find_by(id: params[:admin_id], roles: { name: Role::ADMIN })
 
       if admin.nil?
@@ -21,6 +33,7 @@ module Api
       help_request = HelpRequest.new(
         requester: current_user,
         admin: admin,
+        task: task,
         question: params[:question]
       )
 

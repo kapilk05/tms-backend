@@ -4,6 +4,7 @@ class HelpRequest < ApplicationRecord
 
   belongs_to :requester, class_name: 'Member'
   belongs_to :admin, class_name: 'Member'
+  belongs_to :task
   has_one :help_answer, dependent: :destroy
 
   validates :question, presence: true
