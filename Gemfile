@@ -4,7 +4,7 @@ ruby "3.0.4"
 gem "rails", "~> 7.1.6"
 gem "pg", "~> 1.1"
 gem "puma", ">= 5.0"
-
+gem "rails_12factor", group: :production
 gem "tzinfo-data", platforms: %i[ mswin mswin64 mingw x64_mingw jruby ]
 
 gem "bootsnap", require: false

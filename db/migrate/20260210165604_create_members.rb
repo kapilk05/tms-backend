@@ -2,7 +2,7 @@ class CreateMembers < ActiveRecord::Migration[7.1]
   def change
     create_table :members do |t|
       t.string :email, null: false
-      t.string :password, null: false
+      t.string :password_digest, null: false
       t.string :name, null: false
       t.references :role, null: false, foreign_key: true
 
