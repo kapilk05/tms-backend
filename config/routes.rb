@@ -13,6 +13,11 @@ Rails.application.routes.draw do
     end
 
     resources :tasks do
+      collection do
+        post 'assign', to: 'tasks#assign'
+        post 'complete', to: 'tasks#complete'
+      end
+
       member do
         post 'assign', to: 'tasks#assign'
         delete 'unassign/:member_id', to: 'tasks#unassign', as: 'unassign'
@@ -24,6 +29,7 @@ Rails.application.routes.draw do
     resources :help_requests, only: [:create, :index] do
       collection do
         get 'admins', to: 'help_requests#admins'
+        post 'answer', to: 'help_requests#answer'
       end
 
       member do

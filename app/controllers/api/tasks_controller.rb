@@ -5,19 +5,16 @@ module Api
     before_action :authorize_assignment, only: [:assign, :unassign]
     before_action :authorize_assignee, only: [:complete]
 
-    # GET /api/tasks
     def index
       page = params[:page] || 1
       per_page = [params[:per_page].to_i, 100].min || 10
       
-      # Get tasks where user is creator OR assigned to
       tasks = Task.includes(:created_by, :assigned_members)
                .left_joins(:task_assignments)
                .where("tasks.created_by_id = ? OR task_assignments.member_id = ?", 
                       current_user.id, current_user.id)
                .distinct
       
-      # Apply filters
       tasks = tasks.where(status: params[:status]) if params[:status].present?
       tasks = tasks.where(priority: params[:priority]) if params[:priority].present?
       tasks = tasks.order(params[:sort] || :created_at)
@@ -36,12 +33,10 @@ module Api
       }
     end
 
-    # GET /api/tasks/:id
     def show
       render json: task_detail_json(@task)
     end
 
-    # POST /api/tasks
     def create
       task = Task.new(task_params)
       task.created_by = current_user
@@ -53,7 +48,6 @@ module Api
       end
     end
 
-    # PUT /api/tasks/:id
     def update
       if @task.update(task_params)
         render json: task_detail_json(@task)
@@ -62,13 +56,11 @@ module Api
       end
     end
 
-    # DELETE /api/tasks/:id
     def destroy
       @task.destroy
       render json: { message: 'Task deleted successfully' }, status: :ok
     end
 
-    # POST /api/tasks/:id/assign
     def assign
       member_ids = params[:member_ids] || []
       
@@ -86,7 +78,6 @@ module Api
       }
     end
 
-    # DELETE /api/tasks/:id/unassign/:member_id
     def unassign
       member = Member.find(params[:member_id])
       assignment = TaskAssignment.find_by(task: @task, member: member)
@@ -99,7 +90,6 @@ module Api
       end
     end
 
-    # GET /api/tasks/:id/assignments
     def assignments
       render json: {
         task_id: @task.id,
@@ -116,7 +106,6 @@ module Api
       }
     end
 
-    # POST /api/tasks/:id/complete
     def complete
       assignment = TaskAssignment.find_by(task: @task, member: current_user)
 
@@ -146,7 +135,13 @@ module Api
     private
 
     def set_task
-      @task = Task.find(params[:id])
+      task_id = params[:id] || params[:task_id]
+      if task_id.nil?
+        render json: { error: 'Task id is required' }, status: :bad_request
+        return
+      end
+
+      @task = Task.find(task_id)
     rescue ActiveRecord::RecordNotFound
       render json: { error: 'Task not found' }, status: :not_found
     end

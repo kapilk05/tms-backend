@@ -3,7 +3,6 @@ module Api
     before_action :set_help_request, only: [:answer]
     before_action :authorize_admin, only: [:answer]
 
-    # GET /api/help_requests/admins
     def admins
       admins = Member.joins(:role).where(roles: { name: Role::ADMIN })
       render json: {
@@ -11,7 +10,6 @@ module Api
       }
     end
 
-    # POST /api/help_requests
     def create
       admin = Member.joins(:role).find_by(id: params[:admin_id], roles: { name: Role::ADMIN })
 
@@ -33,7 +31,6 @@ module Api
       end
     end
 
-    # GET /api/help_requests
     def index
       if current_user.role.name == Role::ADMIN
         help_requests = HelpRequest.includes(:requester, :admin, :help_answer)
@@ -50,7 +47,6 @@ module Api
       }
     end
 
-    # POST /api/help_requests/:id/answer
     def answer
       unless @help_request.admin_id == current_user.id
         render json: { error: 'Forbidden' }, status: :forbidden
@@ -71,7 +67,13 @@ module Api
     private
 
     def set_help_request
-      @help_request = HelpRequest.find(params[:id])
+      help_request_id = params[:id] || params[:help_request_id]
+      if help_request_id.nil?
+        render json: { error: 'Help request id is required' }, status: :bad_request
+        return
+      end
+
+      @help_request = HelpRequest.find(help_request_id)
     rescue ActiveRecord::RecordNotFound
       render json: { error: 'Help request not found' }, status: :not_found
     end
